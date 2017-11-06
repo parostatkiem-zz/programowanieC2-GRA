@@ -1,0 +1,8 @@
+﻿  stdafx.cpp
+  Cwiczenia2 - gra.cpp
+Cwiczenia2 - gra.cpp(362): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  Generating code
+  All 161 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  Cwiczenia2 - gra.vcxproj -> C:\Users\Ciku720\Documents\Visual Studio 2015\Projects\cwiczenia2\Cwiczenia2 - gra\x64\Release\Cwiczenia2 - gra.exe
+  Cwiczenia2 - gra.vcxproj -> C:\Users\Ciku720\Documents\Visual Studio 2015\Projects\cwiczenia2\Cwiczenia2 - gra\x64\Release\Cwiczenia2 - gra.pdb (Full PDB)
