@@ -1,4 +1,4 @@
 ﻿  Cwiczenia2 - gra.cpp
-c:\users\ciku720\documents\visual studio 2015\projects\cwiczenia2\cwiczenia2 - gra\cwiczenia2 - gra\cwiczenia2 - gra.cpp(364): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\ciku720\documents\visual studio 2015\projects\cwiczenia2\cwiczenia2 - gra\cwiczenia2 - gra\cwiczenia2 - gra.cpp(426): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   Cwiczenia2 - gra.vcxproj -> C:\Users\Ciku720\Documents\Visual Studio 2015\Projects\cwiczenia2\Cwiczenia2 - gra\x64\Debug\Cwiczenia2 - gra.exe
   Cwiczenia2 - gra.vcxproj -> C:\Users\Ciku720\Documents\Visual Studio 2015\Projects\cwiczenia2\Cwiczenia2 - gra\x64\Debug\Cwiczenia2 - gra.pdb (Full PDB)

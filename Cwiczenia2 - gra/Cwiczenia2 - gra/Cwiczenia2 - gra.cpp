@@ -1,16 +1,16 @@
 #include "stdafx.h"
 #include <iostream>
-#include <vector>
 #include <random>
 #include <ctime>
 #include <string>
 
 #define PRAWDOPODOBIENSTWO_ZAPADKI 0.18
 #define PRAWDOPODOBIENSTWO_KATAPULTY 0.11
+#define POCZATKOWA_ILOSC_STRZAL 5
+
 using namespace std;
 
-
-
+void KoniecGry(char powod);
 
 class Pole
 {
@@ -18,7 +18,7 @@ public:
 	char sasiad_1;
 	char sasiad_2;
 	char sasiad_3;
-	char typ=0; //0=podloga 1=zapadka 2=katapulta
+	char typ = 0; //0=podloga 1=zapadka 2=katapulta
 	bool PolaczonaZ(char p)
 	{
 		if (p == sasiad_1 || p == sasiad_2 || p == sasiad_3)
@@ -27,19 +27,30 @@ public:
 		}
 		return false;
 	}
-	array<char,3> &Sasiedzi()
-	{
-		char out[3];
-		out[0] = sasiad_1;
-		out[1] = sasiad_2;
-		out[2] = sasiad_3;
-	}
+
 };
+
 Pole plansza[21]; //sztuczna implementacja indeksowania od 1; plansza[0] nie jest u¿ywane
 
 class Potwor
 {
+	
+private:
+	
+	void IdzDo(char punkt)
+	{
+		if (plansza[punkt].typ == 1 || plansza[punkt].typ == 2)
+		{
+			return;
+		}
+		else
+		{
+			pozycja = punkt;
+		}
+	}
+	
 public:
+
 	char pozycja;
 
 	void LosujPozycje()
@@ -54,10 +65,11 @@ public:
 		pozycja = random;
 	}
 
-	void IdzDoGracza()
-	{
+	void IdzDoGracza();
+	
+	
 
-	}
+	
 
 	
 };
@@ -67,63 +79,20 @@ class Gracz
 {
 private:
 	char random;
-public:
-	char pozycja;
-	char strzaly = 5; //poczatkowa ilosc strzal
-
-	void LosujPozycje()
+	bool padlStrzal = false;
+	void SprawdzNiebezpieczenstwo(char p)
 	{
-		
-
-		do
+		if (potwor.pozycja == p)
 		{
-			random = (rand() % 20) + 1;
-		} while (plansza[random].typ == 1 || plansza[random].typ == 2 || potwor.pozycja==random);
-
-		pozycja = random;
-	}
-
-	void WykonajRuch(char cel)
-	{
-		system("cls");
-		if (plansza[pozycja].PolaczonaZ(cel))
-		{
-			//mozna wykonac ruch
-			if (plansza[cel].typ == 1)
-			{
-				//gracz wszedl w zapadke
-				cout << "Koniec gry, zapadka na pozycji "<<+cel<<endl;
-				// KONIEC GRY
-				return;
-			}
-
-			if (plansza[cel].typ == 2)
-			{
-				
-				WykonajSkok(cel);
-				return;
-			}
-
-			pozycja = cel;
-			cout << "Przeszedles na pole " << +pozycja << ". \n";
-
-			if (potwor.pozycja == cel)
-			{
-				//wszedles w potwora!!
-				cout << "Koniec gry, trafiles na potwora na pozycji " << +cel << endl;
-				return;
-			}
-			SprawdzNiebezpieczenstwa();
-			cout << "Wchodzisz do komory nr  " << +pozycja << ". Ta komora jest polaczona tunelami z komorami " << +plansza[pozycja].sasiad_1 << ", " << +plansza[pozycja].sasiad_2 << ", " << +plansza[pozycja].sasiad_3 << endl
-				<< "Wchodzisz do nastepnej komory czy strzelasz ? \n";
-
-
-		
+			cout << "Czuje potwora...\n";
 		}
-		else
+		if (plansza[p].typ == 1)
 		{
-			cout << "Nie mozesz wykonac takiego ruchu!. \n";
-			cout << "Pola w poblizu: " << +plansza[pozycja].sasiad_1 << ", " << +plansza[pozycja].sasiad_2 << ", " << +plansza[pozycja].sasiad_3<<endl;
+			cout << "Czuje przeciag...\n";
+		}
+		if (plansza[p].typ == 2)
+		{
+			cout << "Czuje katapulte...\n";
 		}
 	}
 	void WykonajSkok(char zrodlo)
@@ -136,7 +105,7 @@ public:
 		if (plansza[random].typ == 1)
 		{
 			//gracz spadl w zapadke
-			cout << "Koniec gry, wpadles w zapadke na pozycji "<<+random<<endl;
+			cout << "Koniec gry, wpadles w zapadke na pozycji " << +random << endl;
 			// KONIEC GRY
 			return;
 		}
@@ -157,11 +126,76 @@ public:
 			cout << "Koniec gry, spadles na potwora na pozycji " << +random << endl;
 			return;
 		}
+		if (padlStrzal)potwor.IdzDoGracza();
 		SprawdzNiebezpieczenstwa();
-		cout << "Wchodzisz do komory nr "<<+pozycja<<" Ta komora jest polaczona tunelami z komorami " <<+plansza[pozycja].sasiad_1 << ", " << +plansza[pozycja].sasiad_2 << ", " << +plansza[pozycja].sasiad_3 << endl
-			 <<"Wchodzisz do nastepnej komory czy strzelasz ? \n";
+		cout << "Wchodzisz do komory nr " << +pozycja << " Ta komora jest polaczona tunelami z komorami " << +plansza[pozycja].sasiad_1 << ", " << +plansza[pozycja].sasiad_2 << ", " << +plansza[pozycja].sasiad_3 << endl
+			<< "Wchodzisz do nastepnej komory czy strzelasz ? \n";
 
 	}
+public:
+	char pozycja;
+	char strzaly = POCZATKOWA_ILOSC_STRZAL; //poczatkowa ilosc strzal
+
+	void LosujPozycje()
+	{
+		
+
+		do
+		{
+			random = (rand() % 20) + 1;
+		} while (plansza[random].typ == 1 || plansza[random].typ == 2 || potwor.pozycja==random);
+
+		if (random > 1) pozycja = random - 1; //fikuœny zabieg, ¿eby po losowaniu pozycji wyœwietliæ informacje
+		else pozycja = random + 1;
+
+		WykonajRuch(random);
+	}
+
+	void WykonajRuch(char cel)
+	{
+		system("cls");
+		if (plansza[pozycja].PolaczonaZ(cel))
+		{
+			//mozna wykonac ruch
+			if (plansza[cel].typ == 1)
+			{
+				//gracz wszedl w zapadke
+				KoniecGry(1);
+				// KONIEC GRY
+				return;
+			}
+
+			if (plansza[cel].typ == 2)
+			{
+				
+				WykonajSkok(cel);
+				return;
+			}
+
+			pozycja = cel;
+			cout << "Przeszedles na pole " << +pozycja << ". \n";
+			
+			if (potwor.pozycja == cel)
+			{
+				//wszedles w potwora!!
+				KoniecGry(0);
+				return;
+			}
+			if(padlStrzal)potwor.IdzDoGracza();
+			SprawdzNiebezpieczenstwa();
+			cout << "Wchodzisz do komory nr  " << +pozycja << ". Ta komora jest polaczona tunelami z komorami " << +plansza[pozycja].sasiad_1 << ", " << +plansza[pozycja].sasiad_2 << ", " << +plansza[pozycja].sasiad_3 << endl
+				<< "Wchodzisz do nastepnej komory czy strzelasz ? \n";
+
+
+		
+		}
+		else
+		{
+			cout << "Nie mozesz wykonac takiego ruchu!. \n";
+			cout << "Pola w poblizu: " << +plansza[pozycja].sasiad_1 << ", " << +plansza[pozycja].sasiad_2 << ", " << +plansza[pozycja].sasiad_3<<endl;
+		}
+	}
+	
 
 	void Strzel(char p1, char p2)
 	{
@@ -179,16 +213,18 @@ public:
 		{
 			//mozna strzelic w ten sposob
 			strzaly--;
+			padlStrzal = true;
+			potwor.IdzDoGracza();
 
 			if (potwor.pozycja == p1 || potwor.pozycja == p2)
 			{
 				//WYGRANA GRA!!!
-				cout << "Zabiles potwora, brawo!" << endl;
+				KoniecGry(2);
 				
 			}
 			else
 			{
-				cout << "Oddales strzal, ale nic z teog nie wyniklo..." << endl;
+				cout << "Oddales strzal, ale nic z tego nie wyniklo..." << endl;
 			}
 			return;
 		
@@ -207,26 +243,25 @@ public:
 		SprawdzNiebezpieczenstwo(plansza[pozycja].sasiad_3);
 		
 	}
-	void SprawdzNiebezpieczenstwo(char p)
-	{
-		if (potwor.pozycja == p)
-		{
-			cout << "Czuje potwora...\n";
-		}
-		if (plansza[p].typ == 1)
-		{
-			cout << "Czuje przeciag...\n";
-		}
-		if (plansza[p].typ == 2)
-		{
-			cout << "Czuje katapulte...\n";
-		}
-	}
 
 	
 };
+
 Gracz gracz;
 
+
+void Potwor::IdzDoGracza()
+{
+	//konieczna definicja poza klas¹, zeby zmienna "gracz" by³a ju¿ zadeklarowana
+	if (gracz.pozycja < pozycja)
+	{
+		IdzDo(pozycja - 1);
+	}
+	else
+	{
+		IdzDo(pozycja + 1);
+	}
+}
 
 void Wypelnij_Plansze()
 {
@@ -332,7 +367,27 @@ void Wypelnij_Plansze()
 	}
 }
 
+void KoniecGry(char powod) //0=zabil cie potwor | 1=zapadka | 2=zabiles potwora
+{
+	system("CLS");
+	cout << "KONIEC GRY!!!"<<endl;
+	if (powod == 0)
+	{
+		cout << "Zabil cie potwor :("<<endl;
+	}
+	if (powod == 1)
+	{
+		cout << "Wpadles w zapadke :(" << endl;
+	}
+	if (powod == 2)
+	{
+		cout << "Udalo Ci sie zabic potwora! Barwo!! :)" << endl;
+	}
 
+	cout << "Wykorzystales " << POCZATKOWA_ILOSC_STRZAL - gracz.strzaly << " strzal." << endl;
+	cout << "Chcesz grac ponownie? --> komenda 'r'" << endl;
+
+}
 
 void ShowDebug()
 {
@@ -359,14 +414,19 @@ void ShowDebug()
 	cout << "Graczowi pozostalo " <<+gracz.strzaly << " strzal.\n";
 }
 
+void NowaGra()
+{
+	Wypelnij_Plansze();
+	potwor.LosujPozycje(); //musi byc wywolane przed gracz.LosujPozycje !!!
+	gracz.LosujPozycje();
+}
+
 char main()
 {
 	srand(time(NULL));
 	string input;
 
-	Wypelnij_Plansze();
-	potwor.LosujPozycje(); //musi byc wywolane przed gracz.LosujPozycje !!!
-	gracz.LosujPozycje();
+	NowaGra();
 	
 
 	do
@@ -431,6 +491,12 @@ char main()
 			}
 
 			
+		}
+
+		if (input == "r")
+		{
+			system("CLS");
+			NowaGra();
 		}
 
 	} while (true);
